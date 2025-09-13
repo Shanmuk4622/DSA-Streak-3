@@ -5,20 +5,21 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
 import { Dashboard } from '@/components/dashboard';
-import { placeholderProblems } from '@/lib/placeholder-data';
 import { Header } from '@/components/header';
+import { useProblems } from '@/hooks/use-problems';
 
 export default function DashboardPage() {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const { problems, loading: problemsLoading, addProblem } = useProblems(user?.uid);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       router.push('/login');
     }
-  }, [user, loading, router]);
+  }, [user, authLoading, router]);
 
-  if (loading || !user) {
+  if (authLoading || !user) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -26,15 +27,15 @@ export default function DashboardPage() {
     );
   }
 
-  // In a real application, you would fetch user-specific data from your database (e.g., Firebase) here.
-  // For demonstration, we are passing static placeholder data.
-  const problems = placeholderProblems;
-
   return (
     <>
       <Header />
       <main>
-        <Dashboard initialProblems={problems} />
+        <Dashboard 
+          problems={problems} 
+          isLoading={problemsLoading} 
+          onAddProblem={addProblem} 
+        />
       </main>
     </>
   );

@@ -25,7 +25,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { TOPICS, DIFFICULTIES } from '@/lib/dsa';
-import type { Problem, Topic, Difficulty } from '@/lib/dsa';
+import type { Problem } from '@/lib/dsa';
 import { useToast } from '@/hooks/use-toast';
 
 
@@ -41,11 +41,12 @@ type ProblemFormValues = z.infer<typeof problemSchema>;
 
 interface ProblemLogModalProps {
   children: React.ReactNode;
-  onAddProblem: (problem: Omit<Problem, 'id'>) => void;
+  onAddProblem: (problem: Omit<Problem, 'id'>) => Promise<void>;
 }
 
 export function ProblemLogModal({ children, onAddProblem }: ProblemLogModalProps) {
   const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   
   const form = useForm<ProblemFormValues>({
@@ -57,14 +58,25 @@ export function ProblemLogModal({ children, onAddProblem }: ProblemLogModalProps
     },
   });
 
-  const onSubmit = (data: ProblemFormValues) => {
-    onAddProblem(data);
-    toast({
-        title: "Success!",
-        description: `Problem "${data.title}" has been logged.`,
-    })
-    form.reset();
-    setOpen(false);
+  const onSubmit = async (data: ProblemFormValues) => {
+    setIsSubmitting(true);
+    try {
+      await onAddProblem(data);
+      toast({
+          title: "Success!",
+          description: `Problem "${data.title}" has been logged.`,
+      })
+      form.reset({ title: '', url: '', date: new Date() });
+      setOpen(false);
+    } catch (error) {
+       toast({
+          variant: 'destructive',
+          title: "Error",
+          description: "Failed to log problem. Please try again.",
+      })
+    } finally {
+        setIsSubmitting(false);
+    }
   };
 
   return (
@@ -188,9 +200,11 @@ export function ProblemLogModal({ children, onAddProblem }: ProblemLogModalProps
             />
              <DialogFooter>
                 <DialogClose asChild>
-                    <Button type="button" variant="secondary">Cancel</Button>
+                    <Button type="button" variant="secondary" disabled={isSubmitting}>Cancel</Button>
                 </DialogClose>
-                <Button type="submit">Save Problem</Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? 'Saving...' : 'Save Problem'}
+                </Button>
             </DialogFooter>
           </form>
         </Form>
