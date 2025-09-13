@@ -1,9 +1,7 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
 import { Flame, Star, PlusCircle, Code } from 'lucide-react';
-import { Header } from '@/components/header';
 import { StatCard } from '@/components/stat-card';
 import { CalendarHeatmap } from '@/components/calendar-heatmap';
 import { ProblemLogModal } from '@/components/problem-log-modal';
@@ -34,7 +32,6 @@ export function Dashboard({ initialProblems }: DashboardProps) {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
       <main className="flex-1 container mx-auto p-4 md:p-8 space-y-8">
         <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <StatCard title="Current Streak" value={`${streaks.currentStreak} Days`} icon={Flame} />
