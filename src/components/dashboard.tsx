@@ -83,9 +83,6 @@ export function Dashboard({ problems, isLoading, onAddProblem }: DashboardProps)
         </section>
 
       </main>
-      <footer className="py-4 text-center text-sm text-muted-foreground border-t">
-        <p>Built for the modern problem solver.</p>
-      </footer>
     </div>
   );
 }
