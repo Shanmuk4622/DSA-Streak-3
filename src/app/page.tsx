@@ -8,9 +8,10 @@ import { Header } from '@/components/header';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { BarChart, CalendarCheck, Lightbulb, ListPlus } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
-  const { user, loading, signInWithGoogle } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -64,8 +65,8 @@ export default function Home() {
               <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
                 Track your Data Structures & Algorithms journey, visualize your progress, and stay motivated with powerful analytics and AI insights.
               </p>
-              <Button size="lg" onClick={signInWithGoogle} className="mt-8">
-                Get Started - It's Free
+              <Button size="lg" asChild className="mt-8">
+                <Link href="/login">Get Started - It's Free</Link>
               </Button>
             </div>
             <div className="relative h-64 w-full max-w-md rounded-lg shadow-2xl overflow-hidden">
