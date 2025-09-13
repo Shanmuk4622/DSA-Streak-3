@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { format } from 'date-fns';
+import { format, startOfDay } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -189,7 +189,10 @@ export function ProblemLogModal({ children, onAddProblem }: ProblemLogModalProps
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
-                        disabled={date => date > new Date() || date < new Date('1900-01-01')}
+                        disabled={(date) => {
+                            const today = startOfDay(new Date());
+                            return date > today || date < today;
+                        }}
                         initialFocus
                       />
                     </PopoverContent>
