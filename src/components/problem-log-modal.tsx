@@ -5,8 +5,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { format, startOfDay } from 'date-fns';
-import { Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -21,9 +19,6 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
 import { TOPICS, DIFFICULTIES } from '@/lib/dsa';
 import type { Problem } from '@/lib/dsa';
 import { useToast } from '@/hooks/use-toast';
@@ -61,7 +56,9 @@ export function ProblemLogModal({ children, onAddProblem }: ProblemLogModalProps
   const onSubmit = async (data: ProblemFormValues) => {
     setIsSubmitting(true);
     try {
-      await onAddProblem(data);
+      // Ensure the date is always the current date upon submission
+      const problemData = { ...data, date: new Date() };
+      await onAddProblem(problemData);
       toast({
           title: "Success!",
           description: `Problem "${data.title}" has been logged.`,
@@ -163,44 +160,6 @@ export function ProblemLogModal({ children, onAddProblem }: ProblemLogModalProps
                 )}
                 />
             </div>
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Date Solved</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={'outline'}
-                          className={cn(
-                            'w-full pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground'
-                          )}
-                        >
-                          {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => {
-                            const today = startOfDay(new Date());
-                            return date > today || date < today;
-                        }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
              <DialogFooter>
                 <DialogClose asChild>
                     <Button type="button" variant="secondary" disabled={isSubmitting}>Cancel</Button>
